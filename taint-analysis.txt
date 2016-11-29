@@ -1,0 +1,20 @@
+Root: enme-mvc/rest-api/api-v1/src/main/java/org/encuestame/rest/api/v1/CommentJsonController.java function createComment
+
+How we could automatically spot that root: It's annotated org.springframework.stereotype.Controller; methods of these can be directly mapped onto URLs. Something in the Spring framework is doing the preliminary work, but we don't need to care about that.
+
+Their sanitiser: ./enme-mvc/controllers/src/main/java/org/encuestame/mvc/controller/AbstractBaseOperations.java function "filterValue". Calls HTMLInputFilter to do the real work, but this is as a good a place as any to mark sanitisation taking place.
+
+The entry point calls enme-business/src/main/java/org/encuestame/business/service/CommentService.java which is instantiated by Spring's init code (i.e. using reflection, introspection on annotations and so on, so we must hack this)
+
+That uses another magic leap via ./enme-business/src/main/java/org/encuestame/business/service/AbstractDataSource.java's commentOperations, which is reflectively created by Spring again.
+
+This is ./enme-persistence/enme-dao/src/main/java/org/encuestame/persistence/dao/imp/CommentDao.java
+
+That object inherits from a Spring Dao abstract class, and therefore calling a set... method on it is sufficient to constitute database access.
+
+Thus, settings:
+
+Root: CommentJsonController.createComment
+Source: 'mycomment' parameter to CommentJsonController.createComment 
+Sanitiser: AbstractBaseOperations.filterValue
+Sink: AbstractHibernateDaoSupport.saveOrUpdate consumes taint from the fields of the Comment passed as parameter 1.
