@@ -296,6 +296,16 @@ public class CommentJsonController extends AbstractJsonControllerV1 {
          return returnData();
      }
 
+    private char getTaintedChar() {
+      return 'a';
+    }
+
+    private String getTaintedString() {
+      char cs = new char[1];
+      cs[0]=getTaintedChar();
+      return new String(cs);
+    }
+
     /**
      * Create a comment.
      * @param mycomment
@@ -312,6 +322,7 @@ public class CommentJsonController extends AbstractJsonControllerV1 {
             final Long tweetPollId,
             final String type,
             final Long relatedCommentId , boolean published) throws EnMeNoResultsFoundException, EnmeNotAllowedException {
+         mycomment=getTaintedString();
         final CommentBean bean = new CommentBean();
          final TypeSearchResult typeResult = TypeSearchResult.getTypeSearchResult(filterValue(type));
          bean.setComment(filterValue(mycomment));

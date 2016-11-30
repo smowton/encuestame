@@ -1,0 +1,4 @@
+[
+{ "id": "my_source", "kind": "source", "where": "return_value", "taint": "UNESCAPED_STRING", "function": "org.encuestame.rest.api.v1.CommentJsonController.getTaintedChar" },
+{ "id": "my_sink",   "kind": "sink",   "where": "parameter1", "taint": "999999", "function": "com.diffblue.sakai_stubs.TaintSink.receive_taint", "message": "Unescaped HTML written to DAO" , "immediate": true}
+]
