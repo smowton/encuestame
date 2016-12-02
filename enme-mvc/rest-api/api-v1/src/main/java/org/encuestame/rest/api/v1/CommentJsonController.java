@@ -32,6 +32,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.encuestame.business.service.CommentService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -301,7 +302,7 @@ public class CommentJsonController extends AbstractJsonControllerV1 {
     }
 
     private String getTaintedString() {
-      char cs = new char[1];
+      char[] cs = new char[1];
       cs[0]=getTaintedChar();
       return new String(cs);
     }
@@ -318,18 +319,20 @@ public class CommentJsonController extends AbstractJsonControllerV1 {
      * @throws EnMeNoResultsFoundException
      */
     private CommentBean createComment(
-            final String mycomment,
+            String mycomment,
             final Long tweetPollId,
             final String type,
             final Long relatedCommentId , boolean published) throws EnMeNoResultsFoundException, EnmeNotAllowedException {
-         mycomment=getTaintedString();
+	//mycomment=getTaintedString();
         final CommentBean bean = new CommentBean();
+	bean.taintField = getTaintedChar();
          final TypeSearchResult typeResult = TypeSearchResult.getTypeSearchResult(filterValue(type));
          bean.setComment(filterValue(mycomment));
          bean.setCreatedAt(Calendar.getInstance().getTime());
          bean.setParentId(relatedCommentId);
          bean.setId(tweetPollId);
          bean.setType(typeResult);
+         CommentService c = new CommentService(); // Force class to appear reachable which is usually accessed via reflection.
          final Comment comment = getCommentService().createComment(bean);
          return ConvertDomainBean.convertCommentDomainToBean(comment);
     }

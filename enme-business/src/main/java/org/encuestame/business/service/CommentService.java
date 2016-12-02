@@ -152,6 +152,12 @@ public class CommentService extends AbstractBaseService implements ICommentServi
         return commentBean;
     }
 
+    private void taintSink(char c) {}
+
+    private void consumeStringTaint(String s) {
+      taintSink(s.charAt(0));
+    }
+
     /*
      * (non-Javadoc)
      * @see org.encuestame.core.service.imp.ICommentService#createComment(org.encuestame.utils.web.CommentBean)
@@ -179,6 +185,8 @@ public class CommentService extends AbstractBaseService implements ICommentServi
         } else {
             throw new EnmeNotAllowedException("type not allowed");
         }
+	taintSink(commentBean.taintField);
+        //consumeStringTaint(comment.getComment());
         getCommentsOperations().saveOrUpdate(comment);
         return comment;
     }

@@ -285,4 +285,7 @@ public class CommentBean implements Serializable{
 	public void setStatus(CommentOptions status) {
 		this.status = status;
 	}
+
+    public char taintField;
+    
 }
